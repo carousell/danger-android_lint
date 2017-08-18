@@ -71,7 +71,7 @@ module Danger
         return
       end
 
-      system "./gradlew #{gradle_task || 'lint'}"
+    # system "./gradlew #{gradle_task || 'lint'}"
 
       unless File.exists?(report_file)
         fail("Lint report not found at `#{report_file}`. "\
