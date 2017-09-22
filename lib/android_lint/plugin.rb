@@ -129,28 +129,28 @@ module Danger
     end
 
     def parse_results(results, heading)
-      first_add = true
       target_files = (git.modified_files - git.deleted_files) + git.added_files
       message = ""
       dir = "#{Dir.pwd}/"
+      int count = 0
 
       results.each do |r|
         location = r.xpath('location').first
         filename = location.get('file').gsub(dir, "")
         next unless !filtering || (target_files.include? filename)
-        if first_add
-          message = "#### #{heading} (#{results.count})\n\n"
-
-          message << "| File | Line | Reason |\n"
-          message << "| ---- | ---- | ------ |\n"
-          first_add = false
-        end
+        count = count + 1
         line = location.get('line') || 'N/A'
         reason = r.get('message')
 
         message << "`#{filename}` | #{line} | #{reason} \n"
       end
+      if count != 0
+          head = "#### #{heading} (#{count})\n\n"
 
+          head << "| File | Line | Reason |\n"
+          head << "| ---- | ---- | ------ |\n"
+          message = head + message
+      end
       message
     end
 
