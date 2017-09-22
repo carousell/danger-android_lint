@@ -86,7 +86,7 @@ module Danger
         send_inline_comment(filtered_issues)
       else
         message = message_for_issues(filtered_issues)
-        markdown(message) unless filtered_issues.empty?
+        markdown("### AndroidLint found issues\n\n" + message) unless message.to_s.empty?
       end
     end
 
@@ -118,7 +118,7 @@ module Danger
     end
 
     def message_for_issues(issues)
-      message = "### AndroidLint found issues\n\n"
+      message = ""
 
       SEVERITY_LEVELS.reverse.each do |level|
         filtered = issues.select{|issue| issue.get("severity") == level}
@@ -129,17 +129,22 @@ module Danger
     end
 
     def parse_results(results, heading)
+      first_add = true
       target_files = (git.modified_files - git.deleted_files) + git.added_files
+      message = ""
       dir = "#{Dir.pwd}/"
-      message = "#### #{heading} (#{results.count})\n\n"
-
-      message << "| File | Line | Reason |\n"
-      message << "| ---- | ---- | ------ |\n"
 
       results.each do |r|
         location = r.xpath('location').first
         filename = location.get('file').gsub(dir, "")
         next unless !filtering || (target_files.include? filename)
+        if first_add
+          message = "#### #{heading} (#{results.count})\n\n"
+
+          message << "| File | Line | Reason |\n"
+          message << "| ---- | ---- | ------ |\n"
+          first_add = false
+        end
         line = location.get('line') || 'N/A'
         reason = r.get('message')
 
