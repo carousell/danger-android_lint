@@ -132,7 +132,7 @@ module Danger
       target_files = (git.modified_files - git.deleted_files) + git.added_files
       message = ""
       dir = "#{Dir.pwd}/"
-      int count = 0
+      count = 0
 
       results.each do |r|
         location = r.xpath('location').first
